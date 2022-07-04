@@ -6,7 +6,7 @@
 //
 // setCursor (e,							- target event to get target's position, size and toggle cursor's class
 //			 sizeRate,						- cursor size (1 - element size (100%), undefined - no change (just draging effect), less or more than 1 - smaller or bigger than target)
-//			 additionalClasses)				- set additional classes to target on wrap
+//			 additionalClasses)				- toggle additional target's classes on wrap
 //			 addScrollOffset)				- add scroll position to cursor position (only if target has position:fixed)
 // coordinateCursor (e,						- target event to modify target/cursor while wrapping target
 //
@@ -65,7 +65,7 @@ const setCursor = (e, sizeRate, additionalClasses, addScrollOffset) => { // get 
 	}
 
 	if (additionalClasses != undefined) {
-		additionalClasses.forEach(item => {e.currentTarget.classList.add(item)});
+		additionalClasses.forEach(item => {e.currentTarget.classList.toggle(item)});
 	}
 }
 
