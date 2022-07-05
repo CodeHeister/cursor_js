@@ -39,6 +39,11 @@
 	opacity: 1;
 }
 
+.cursor-focus {
+	width: 0.75rem !important;
+	height: 0.75rem !important;
+}
+
 .dragged { /* effects while focused */
 	background-color: rgba(225, 225, 225, 0.4);
 }
