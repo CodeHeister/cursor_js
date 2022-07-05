@@ -7,7 +7,9 @@
 // setCursor (e,							- target event to get target's position, size and toggle cursor's class
 //			 sizeRate,						- cursor size (1 - element size (100%), undefined - no change (just draging effect), less or more than 1 - smaller or bigger than target)
 //			 additionalClasses)				- toggle additional target's classes on wrap
-//			 addScrollOffset)				- add scroll position to cursor position (only if target has position:fixed)
+//			 addScrollOffset,				- add scroll position to cursor position (only if target has position:fixed)
+//			 f)								- custom function to interact with target and it's content
+//
 // coordinateCursor (e,						- target event to modify target/cursor while wrapping target
 //
 //					coordinationPercent,	- cursor shake ratio while wrapping target (undefined - no movement)
@@ -15,10 +17,12 @@
 //					sizeRate,				- cursor size (1 - element size (100%), undefined - no change (just draging effect), less or more than 1 - smaller or bigger than target)
 //					centrify,				- (use only if target has transform:translate(-50%, -50%)) 
 //					additionalEffects,		- additional transform effects
-//					addScrollOffset)		- add scroll position to cursor position (only if target has position:fixed)
+//					addScrollOffset,		- add scroll position to cursor position (only if target has position:fixed)
+//					f)						- custom function to interact with target and it's content
 //					
 // unsetCursor (e,							- target event on cursor out
-//				additionalClasses)			- toggle target classes
+//				additionalClasses,			- toggle target classes
+//				f)							- custom function to interact with target and it's content
 
 
 //-- C U R S O R  F U N C T I O N S --//
@@ -43,7 +47,7 @@ const moveCursorScroll = e => { // scroll sync
 	cursor.style.transform = `translate3d(${window.scrollX+mouseX}px, ${window.scrollY+mouseY}px, 0)`; // set position (px)
 }
 
-const setCursor = (e, sizeRate, additionalClasses, addScrollOffset) => { // get target position
+const setCursor = (e, sizeRate, additionalClasses, addScrollOffset, f) => { // get target position
 	if (addScrollOffset == undefined) {
 		var addScrollOffset = false;
 	}
@@ -67,9 +71,13 @@ const setCursor = (e, sizeRate, additionalClasses, addScrollOffset) => { // get 
 	if (additionalClasses != undefined) {
 		additionalClasses.forEach(item => {e.currentTarget.classList.toggle(item)});
 	}
+
+	if (f != undefined) {
+		f(e.currentTarget);
+	}
 }
 
-const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, sizeRate, additionalEffects, addScrollOffset) => { // smooth moving targeted cursor (Rate => -1+, Percent -100+)
+const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, sizeRate, additionalEffects, addScrollOffset, f) => { // smooth moving targeted cursor (Rate => -1+, Percent -100+)
 	if (addScrollOffset == undefined) {
 		var addScrollOffset = false;
 	}
@@ -120,9 +128,13 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 
 		e.currentTarget.style.transform = transform;
 	}
+
+	if (f != undefined) {
+		f(e.currentTarget);
+	}
 }
 
-const unsetCursor = (e, additionalClasses) => {
+const unsetCursor = (e, additionalClasses, f) => {
 	cursorIcon.classList.remove("focused"); // enable following
 
 	cursorIcon.style.width = null; // erase width
@@ -132,6 +144,10 @@ const unsetCursor = (e, additionalClasses) => {
 
 	if (additionalClasses != undefined) {
 		additionalClasses.forEach(item => {e.currentTarget.toggle(item)});
+	}
+
+	if (f != undefined) {
+		f(e.currentTarget);
 	}
 }
 
