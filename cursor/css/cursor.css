@@ -39,7 +39,7 @@
 	opacity: 1;
 }
 
-.focused { /* effects while focused */
+.dragged { /* effects while focused */
 	background-color: rgba(225, 225, 225, 0.4);
 }
 
