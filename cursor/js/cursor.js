@@ -30,8 +30,14 @@
 var mouseX; // global X cursor position
 var mouseY; // global Y cursor position
 
+var realMouseX;
+var realMouseY;
+
 const moveCursor = e => { // follow real cursor
 	showCursor(); // show custom cursor
+
+	realMouseX = e.clientX; 
+	realMouseY = e.clientY;
 
 	if(!cursorIcon.classList.contains('dragged')) {
 		mouseX = e.clientX; // refresh global cursor X
@@ -44,7 +50,24 @@ const moveCursor = e => { // follow real cursor
 const moveCursorScroll = e => { // scroll sync
 	showCursor(); // show custom cursor
 	
-	cursor.style.transform = `translate3d(${window.scrollX+mouseX}px, ${window.scrollY+mouseY}px, 0)`; // set position (px)
+	cursor.classList.forEach(item => {
+		if (item != "cursor" && item != "cursor-visible") {
+			cursor.classList.remove(item);
+		}
+	});
+	
+	cursorIcon.classList.forEach(item => {
+		if (item != "cursor-icon") {
+			cursorIcon.classList.remove(item);
+		}
+		cursorIcon.style.width = null;
+		cursorIcon.style.height = null;
+	});
+
+	mouseX = window.scrollX+realMouseX;
+	mouseY = window.scrollY+realMouseY;
+
+	cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`; // set position (px)
 }
 
 const setCursor = (e, sizeRate, additionalCursorClasses, additionalTargetClasses, addScrollOffset, f) => { // get target position
@@ -53,8 +76,8 @@ const setCursor = (e, sizeRate, additionalCursorClasses, additionalTargetClasses
 			var addScrollOffset = false;
 		}
 
-		mouseX = e.currentTarget.offsetLeft+e.currentTarget.clientWidth/2; // may be commented to optimize
-		mouseY = e.currentTarget.offsetTop+e.currentTarget.clientHeight/2; // may be commented to optimize
+		mouseX = e.currentTarget.offsetLeft+e.currentTarget.offsetWidth/2; // may be commented to optimize
+		mouseY = e.currentTarget.offsetTop+e.currentTarget.offsetHeight/2; // may be commented to optimize
 
 		cursorIcon.classList.add("dragged"); // disables cursor following
 		if (addScrollOffset) { 
@@ -65,16 +88,16 @@ const setCursor = (e, sizeRate, additionalCursorClasses, additionalTargetClasses
 		}
 		
 		if (sizeRate != undefined) {
-			cursorIcon.style.width = `${e.currentTarget.clientWidth*sizeRate}px`; // set new width
-			cursorIcon.style.height = `${e.currentTarget.clientHeight*sizeRate}px`; // set new height
+			cursorIcon.style.width = `${e.currentTarget.offsetWidth*sizeRate}px`; // set new width
+			cursorIcon.style.height = `${e.currentTarget.offsetHeight*sizeRate}px`; // set new height
 		}
 
 		if (additionalTargetClasses != undefined) {
-			additionalTargetClasses.forEach(item => {e.currentTarget.classList.toggle(item)});
+			additionalTargetClasses.forEach(item => {e.currentTarget.classList.add(item)});
 		}
 
 		if (additionalCursorClasses != undefined) {
-			additionalCursorClasses.forEach(item => {cursorIcon.classList.toggle(item)});
+			additionalCursorClasses.forEach(item => {cursorIcon.classList.add(item)});
 		}
 
 		if (f != undefined) {
@@ -89,14 +112,14 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 			var addScrollOffset = false;
 		}
 
-		mouseX = e.currentTarget.offsetLeft+e.currentTarget.clientWidth/2; // may be commented to optimize
-		mouseY = e.currentTarget.offsetTop+e.currentTarget.clientHeight/2; // may be commented to optimize
+		mouseX = e.currentTarget.offsetLeft+e.currentTarget.offsetWidth/2; // may be commented to optimize
+		mouseY = e.currentTarget.offsetTop+e.currentTarget.offsetHeight/2; // may be commented to optimize
 
 		var coordinateX = 0;
 		var coordinateY = 0;
 		if (coordinationPercent != undefined) {
-			var coordinateX = parseInt(((e.clientX-e.currentTarget.offsetLeft)/e.currentTarget.clientWidth-0.5)*coordinationPercent);
-			var coordinateY = parseInt(((e.clientY-e.currentTarget.offsetTop)/e.currentTarget.clientHeight-0.5)*coordinationPercent);
+			var coordinateX = parseInt((e.offsetX/e.currentTarget.offsetWidth-0.5)*coordinationPercent);
+			var coordinateY = parseInt((e.offsetY/e.currentTarget.offsetHeight-0.5)*coordinationPercent);
 		}
 
 		if (addScrollOffset) { 
@@ -107,8 +130,8 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 		}
 		
 		if (sizeRate != undefined) {
-			cursorIcon.style.width = `${e.currentTarget.clientWidth*sizeRate}px`; // set new width
-			cursorIcon.style.height = `${e.currentTarget.clientHeight*sizeRate}px`; // set new height
+			cursorIcon.style.width = `${e.currentTarget.offsetWidth*sizeRate}px`; // set new width
+			cursorIcon.style.height = `${e.currentTarget.offsetHeight*sizeRate}px`; // set new height
 		}
 
 		if (targetMovementRate != undefined || additionalEffects != undefined) {
@@ -121,8 +144,8 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 			if (targetMovementRate != undefined) {
 				if (coordinationPercent == undefined) {
 					var defaultCoordination = 20;
-					var coordinateX = parseInt(((e.clientX-e.currentTarget.offsetLeft)/e.currentTarget.clientWidth-0.5)*defaultCoordination);
-					var coordinateY = parseInt(((e.clientY-e.currentTarget.offsetTop)/e.currentTarget.clientHeight-0.5)*defaultCoordination);
+					var coordinateX = parseInt((e.offsetX/e.currentTarget.offsetWidth-0.5)*defaultCoordination);
+					var coordinateY = parseInt((e.offsetY/e.currentTarget.offsetHeight-0.5)*defaultCoordination);
 				}
 				
 				if (centrify) {
@@ -152,11 +175,11 @@ const unsetCursor = (e, additionalCursorClasses, additionalTargetClasses, f) => 
 		e.currentTarget.style.transform = null;
 
 		if (additionalTargetClasses != undefined) {
-			additionalTargetClasses.forEach(item => {e.currentTarget.classList.toggle(item)});
+			additionalTargetClasses.forEach(item => {e.currentTarget.classList.remove(item)});
 		}
 
 		if (additionalCursorClasses != undefined) {
-			additionalCursorClasses.forEach(item => {cursorIcon.classList.toggle(item)});
+			additionalCursorClasses.forEach(item => {cursorIcon.classList.remove(item)});
 		}
 
 		if (f != undefined) {
@@ -191,6 +214,20 @@ const cursorFocus = (e) => {
 
 const cursorUnfocus = (e) => {
 	cursorIcon.classList.remove('cursor-focus');
+	
+	cursor.classList.forEach(item => {
+		if (item != "cursor" && item != "cursor-visible") {
+			cursor.classList.remove(item);
+		}
+	});
+	
+	cursorIcon.classList.forEach(item => {
+		if (item != "cursor-icon") {
+			cursorIcon.classList.remove(item);
+		}
+		cursorIcon.style.width = null;
+		cursorIcon.style.height = null;
+	});
 }
 
 //- E N A B L E  C U R S O R -//
