@@ -5,6 +5,7 @@
  */
 
 :root {
+	--cursor-color: 225,225,225;
 	--cursor-z: 9; /* cursor layer */
 	--cursor-icon-z: 10; /* cursor icon layer */
 	--cursor-speed: 0.135s; /* cursor transform speed */
