@@ -33,9 +33,6 @@ var mouseY; // global Y cursor position
 var realMouseX;
 var realMouseY;
 
-var lastX;
-var lastY;
-
 const moveCursor = e => { // follow real cursor
 	showCursor(); // show custom cursor
 
@@ -45,8 +42,6 @@ const moveCursor = e => { // follow real cursor
 	if(!cursorIcon.classList.contains('dragged')) {
 		mouseX = e.clientX; // refresh global cursor X
 		mouseY = e.clientY; // refresh global cursor Y
-		lastX = e.clientX;
-		lastY = e.clientY;
 
 		cursor.style.transform = `translate3d(${window.scrollX+mouseX}px, ${window.scrollY+mouseY}px, 0)`; // set new position
 	}
@@ -55,7 +50,7 @@ const moveCursor = e => { // follow real cursor
 const moveCursorScroll = e => { // scroll sync
 	showCursor(); // show custom cursor
 	
-	if(!cursorIcon.classList.contains('dragged') && !cursorIcon.classList.contains("cursor-focus") && cursorIcon.classList.length > 1) {
+	if(!cursorIcon.classList.contains('scroll-dragged') && !cursorIcon.classList.contains("cursor-focus") && cursorIcon.classList.length > 1) {
 		cursor.classList.forEach(item => {
 			if (item != "cursor" && item != "cursor-visible") {
 				cursor.classList.remove(item);
@@ -73,8 +68,12 @@ const moveCursorScroll = e => { // scroll sync
 		mouseX = realMouseX;
 		mouseY = realMouseY;
 	}
-
-	cursor.style.transform = `translate3d(${lastX+window.scrollX}px, ${lastY+window.scrollY}px, 0)`; // set position (px)
+	if(!cursorIcon.classList.contains('scroll-dragged')) {
+		cursor.style.transform = `translate3d(${realMouseX+window.scrollX}px, ${realMouseY+window.scrollY}px, 0)`; // set position (px)
+	}
+	else {
+		cursor.style.transform = `translate3d(${mouseX+window.scrollX}px, ${mouseY+window.scrollY}px, 0)`; // set position (px)
+	}
 }
 
 const setCursor = (e, sizeRate, additionalCursorClasses, additionalTargetClasses, addScrollOffset, f) => { // get target position
@@ -86,12 +85,11 @@ const setCursor = (e, sizeRate, additionalCursorClasses, additionalTargetClasses
 
 		mouseX = e.currentTarget.offsetLeft+e.currentTarget.offsetWidth/2;
 		mouseY = e.currentTarget.offsetTop+e.currentTarget.offsetHeight/2;
-		lastX = mouseX;
-		lastY = mouseY;
 
 		cursorIcon.classList.add("dragged"); // disables cursor following
 		if (addScrollOffset) { 
 			cursor.style.transform = `translate3d(${window.scrollX+mouseX}px, ${window.scrollY+mouseY}px, 0)`; // set target position (px)
+			cursorIcon.classList.add("scroll-dragged");
 		} 
 		else {
 			cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`; // set target position (px)
@@ -124,8 +122,6 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 
 		mouseX = e.currentTarget.offsetLeft+e.currentTarget.offsetWidth/2; // may be commented to optimize
 		mouseY = e.currentTarget.offsetTop+e.currentTarget.offsetHeight/2; // may be commented to optimize
-		lastX = mouseX;
-		lastY = mouseY;
 
 		var coordinateX = 0;
 		var coordinateY = 0;
@@ -179,6 +175,9 @@ const coordinateCursor = (e, coordinationPercent, targetMovementRate, centrify, 
 
 const unsetCursor = (e, additionalCursorClasses, additionalTargetClasses, f) => {
 	cursorIcon.classList.remove("dragged"); // enable following
+	if(cursorIcon.classList.contains('scroll-dragged')) {
+		cursorIcon.classList.remove("scroll-dragged");
+	}
 
 	if(!cursorIcon.classList.contains('cursor-focus')) {
 		cursorIcon.style.width = null; // erase width
@@ -244,11 +243,6 @@ const cursorUnfocus = (e) => {
 		});
 	}
 }
-
-//- E N A B L E  C U R S O R -//
-
-var cursor = document.querySelector(".cursor");
-var cursorIcon = document.querySelector(".cursor-icon");
 
 //- E N A B L E  C U R S O R -//
 

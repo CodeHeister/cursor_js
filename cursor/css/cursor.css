@@ -7,23 +7,31 @@
 :root {
 	--cursor-z: 9; /* cursor layer */
 	--cursor-icon-z: 10; /* cursor icon layer */
-	--cursor-speed: 0.1s; /* cursor transform speed */
+	--cursor-speed: 0.135s; /* cursor transform speed */
+	--cursor-delay: 0s; /* cursor transform speed */
 }
 
 .cursor {
 	position: absolute;
+	top: 0;
+	left: 0;
 	z-index: var(--cursor-z);
 	opacity: 0; /* default visibility disabled */
 }
 
+iframes {
+	pointer-events: none;
+}
+
 .cursor-icon {
-	background-color: rgba(225, 225, 225, 0.9);
+	background-color: rgba(var(--cursor-color), 0.9);
 	border-radius: 2em;
 	transform-origin: 50% 50%;
-	transition: transform var(--cursor-speed) ease-out, background-color var(--cursor-speed) ease-in, width var(--cursor-speed) cubic-bezier(0.35, 0.35, 1, 1), height var(--cursor-speed) cubic-bezier(0.35, 0.35, 1, 1);
+	transition:  background-color ease-in, width cubic-bezier(0.35, 0.35, 1, 1), height cubic-bezier(0.35, 0.35, 1, 1), border ease-out, opacity ease-in;
+	transition-duration: var(--cursor-speed);
 	transform: translate(-50%, -50%);
 	z-index: var(--cursor-icon-z);
-	box-shadow: -0.2rem 0.2rem 5rem 0.05rem #0a0a0a;
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
 .cursor-icon, .cursor {
@@ -45,14 +53,14 @@
 }
 
 .dragged { /* effects while focused */
-	background-color: rgba(225, 225, 225, 0.4);
+	transition-delay: var(--cursor-delay);
 }
 
-* { /* disable default cursor */
-	cursor: none; 
+* { 
+	cursor: none !important; 
 }
- 
-@media (pointer: none), (pointer: coarse) { /* disable custom cursor for gadgets */
+
+@media (pointer: none), (pointer: coarse) { 
     .cursor, .cursor-icon {
 		display: none !important; 
 		visibility: hidden; 
